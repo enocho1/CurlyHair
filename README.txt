@@ -1,9 +1,12 @@
+
+Simulator for curly hair. The library file isn't inlcuded but below are some (potentially outdated) instructions on dependencies
 Windows:
 
 First, determine the full path to the libs file in this repository,
 for example:
 
-    C:\Users\christoy\cs15467_codebase\libs
+    C:\Users\christoy\codebase\libs
+    (targeting ..\libs)
 
 Append this to your environment PATH variable. You can do this via
 Control Panel > System > Advanced system settings > Environment Variables.

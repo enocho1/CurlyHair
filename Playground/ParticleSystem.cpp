@@ -152,6 +152,12 @@ void ParticleSystem::addSpring(int p1, int p2, double stiffness) {
 	springs.push_back(newSpring);
 }
 
+void ParticleSystem::addStretch(int p1, int p2, double stiffness, double damping)
+{
+	Stretch newSpring(p1, p2, stiffness,damping, positions);
+	stretch_springs.push_back(newSpring);
+}
+
 // Add a zero-length spring (a "pin") to the system, attaching a particle
 // to the given location.
 void ParticleSystem::addZeroLengthSpring(int p, P3D x0, double stiffness) {
@@ -209,6 +215,12 @@ dVector ParticleSystem::computeForceVector(const dVector& x, const dVector& v) {
 
 	//add normal springs to vector
 	for (int i = 0; i < springs.size(); i++)
+	{
+		springs[i].addForcesToVector(x, forceVector);
+	}
+	
+	//add stretch springs to vector
+	for (int i = 0; i < stretch_springs.size(); i++)
 	{
 		springs[i].addForcesToVector(x, forceVector);
 	}
@@ -522,5 +534,5 @@ void ParticleSystem::saveData() {
 	outfile << capturedData << std::endl;
 
 	outfile.close();
-	ready_to_quit = true;
+	//ready_to_quit = true;
 }

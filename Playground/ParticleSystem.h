@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Spring.h"
+#include "taz_StretchSpring.h"
 #include "ZeroLengthSpring.h"
 #include "MS_SparseSquare.h"
 #include <vector>
@@ -32,8 +33,11 @@ private:
 	int frameCount;
 	
 
-	// A list of all springs in the system.
+	// A list of all generic springs in the system.
 	vector<Spring> springs;
+	
+	// A list of all generic springs in the system.
+	vector<Stretch> stretch_springs;
 
 	// A list of all zero length springs in the system.
 	list<ZeroLengthSpring> zeroLengthSprings;
@@ -55,6 +59,7 @@ public:
 	ParticleSystem(vector<Particle>& particles);
 	void recordPositions();
 	void addSpring(int p1, int p2, double stiffness);
+	void addStretch(int p1, int p2, double stiffness, double damping);
 	void addZeroLengthSpring(int p, P3D x0, double stiffness);
 	void deleteZeroLengthSpring(int p);
 	void togglePin(int p);
@@ -91,11 +96,13 @@ public:
 
 	// Whether or not we should draw springs and particles as lines and dots respectively.
 	static bool drawSprings;
+	static bool drawStretchSprings;
 	static bool drawParticles;
 	static bool drawZeroLengthSprings;
 	static bool drawFaces;
 	static bool enableGravity;
 	static bool enableCollision;
+
+
 };
 
-void moveHead();

@@ -32,7 +32,8 @@ MassSpringApp::MassSpringApp() {
 	no_expers = 330; // how many experiment files you've got
 
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/triangle.mss");
-	particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
+	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
+	particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/single_curly_hair.mss");
 
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");
 
@@ -254,7 +255,8 @@ void MassSpringApp::restart() {
 	appIsRunning = false;
 	exper_iter += 1;
 	if (exper_iter < no_expers) {
-		particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
+		//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
+		particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/single_curly_hair.mss");
 		//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(0) + ".mss");
 		appIsRunning = true;
 	}

@@ -96,6 +96,7 @@
     <ClCompile Include="ParticleSystemLoader.cpp" />
     <ClCompile Include="Spring.cpp" />
     <ClCompile Include="MassSpringApp.cpp" />
+    <ClCompile Include="taz_StretchSpring.cpp" />
     <ClCompile Include="ZeroLengthSpring.cpp" />
   </ItemGroup>
   <ItemGroup>

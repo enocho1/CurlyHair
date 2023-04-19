@@ -36,6 +36,9 @@
     <ClCompile Include="MassSpringApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="taz_StretchSpring.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ParticleSystem.h">

@@ -14,6 +14,13 @@ struct SpringData {
 	double stiffness;
 };
 
+struct StretchData {
+	int p1;
+	int p2;
+	double stiffness;
+	double damping;
+};
+
 struct ZeroLengthSpringData {
 	int p;
 	P3D x0;
@@ -33,6 +40,7 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 
 	vector<Particle> ps;
 	vector<SpringData> sds;
+	vector<StretchData> strds;
 	vector<ZeroLengthSpringData> zls;
 	bool error = false;
 
@@ -77,6 +85,25 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 				sd.p2 = p2;
 				sd.stiffness = k;
 				sds.push_back(sd);
+			}
+		}
+		else if (line.at(0) == 't') { //t for sTreTch lol
+			int p1, p2;
+			double k;
+			double cs;
+			if (!(iss >> c >> p1 >> p2 >> k >> cs)) {
+				Logger::consolePrint("Error reading spring on line %d", lineNum);
+				error = true;
+				break;
+			}
+			else {
+				Logger::consolePrint("Spring between particles %d, %d, stiffness %f, damping coeff %f", p1, p2, k, cs);
+				StretchData strd;
+				strd.p1 = p1;
+				strd.p2 = p2;
+				strd.stiffness = k;
+				strd.damping = cs;
+				strds.push_back(strd);
 			}
 		}
 		else if (line.at(0) == 'z') {
@@ -141,6 +168,9 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 		ParticleSystem* system = new ParticleSystem(ps);
 		for (auto const &spring : sds) {
 			system->addSpring(spring.p1, spring.p2, spring.stiffness);
+		}
+		for (auto const& spring : strds) {
+			system->addStretch(spring.p1, spring.p2, spring.stiffness, spring.damping);
 		}
 		for (auto const &spring : zls) {
 			system->addZeroLengthSpring(spring.p, spring.x0, spring.stiffness);

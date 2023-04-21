@@ -53,9 +53,10 @@ def generateRoots(r=1, n=6, mode=0):
 
 
 def generateHair(radius, density, spread="radial", mode=0):
-    roots = generateRoots(radius, density, mode)
-    n = len(roots)
-    print
+    # roots = generateRoots(radius, density, mode)
+    roots = [np.array([0,0,0])]
+    # n = len(roots)
+    # print
     hair = []
     for base in roots:
         if spread == "radial":
@@ -64,7 +65,7 @@ def generateHair(radius, density, spread="radial", mode=0):
             direction = base * np.array([1, 0, 1])
         elif spread == "up":
             direction = np.array([0, 1, 0])
-        hair.append(newHair(base, direction, .025, 8))
+        hair.append(newHair(base, direction, 1, 5))
     return hair
 
 
@@ -135,21 +136,22 @@ def generateExperiments(experiments):
                 size = 0
                 for p in hair:
                     P = p + center
-                    F.write(f"p {P[0]} {P[1]} {P[2]} 0 0 0 2\n")
+                    F.write(f"p {P[0]} {P[1]} {P[2]} 0 0 0 1\n")
                     n += 1
                     size += 1
             v = 0
             while v < n:
+                print(f"v={v} @enoch")
                 i = math.floor(v / size)
                 j = v % size
 
                 if (j):
                     if (v+1) % size:
-                        F.write(f"t {v} {v+1} 25 0\n")
+                        F.write(f"t {v} {v+1} 5000000 4472\n")
                 else:
                     hair = all_the_hairs[i][j] + center
-                    F.write(f"s {v} {v+1} 25\n")
-                    F.write(f"z {v} {hair[0]} {hair[1]} {hair[2]} 200\n")
+                    F.write(f"t {v} {v+1} 5000000 4472\n")
+                    F.write(f"z {v} {hair[0]} {hair[1]} {hair[2]} 2000\n")
                 v += 1
             F.write(f"c {center[0]} {center[1]} {center[2]}\n")
             F.write(f"h {hspeed[0]} {hspeed[1]} {hspeed[2]}\n")

@@ -443,7 +443,7 @@ void GLApplication::draw(){
 	glViewport(viewportX, viewportY, viewportWidth, viewportHeight);
 	glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
 	glLoadIdentity();									// Reset The Projection Matrix
-	gluPerspective(45.0, (double)viewportWidth / viewportHeight, 0.05, 150.0);
+	gluPerspective(45.0, (double)viewportWidth / viewportHeight, 0.05, 1500.0); //@enoch, i basically wanna change the scale original had a far=150
 	glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 	glLoadIdentity();									// Reset The Modelview Matrix
 
@@ -461,7 +461,8 @@ void GLApplication::draw(){
 
 	setupLights();
 
-	if (showDesignEnvironmentBox) {
+	//@enoch LOOK AT THIS
+	/*if (showDesignEnvironmentBox) {
 		glColor3d(1, 1, 1);
 		glDisable(GL_LIGHTING);
 		drawDesignEnvironmentBox();
@@ -473,7 +474,7 @@ void GLApplication::draw(){
 		drawGround();
 	}
 
-	if (showReflections && showGroundPlane) drawReflections();
+	if (showReflections && showGroundPlane) drawReflections();*/
 //	if (showShadows && showGroundPlane)	drawShadows();
 
 	drawScene();

@@ -34,6 +34,7 @@ MassSpringApp::MassSpringApp() {
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/triangle.mss");
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
 	particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/single_curly_hair.mss");
+	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/experiment1.mss");
 
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");
 

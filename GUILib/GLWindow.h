@@ -22,7 +22,7 @@
 class GLWindow : public InteractiveWidget {
 protected:
 
-	double designEnvironmentScale = 1.0;
+	double designEnvironmentScale = 10.0; /// hey i'm changing this (i'll probably remember to look up "camera") @enoch
 
 
 	// The viewport of the window

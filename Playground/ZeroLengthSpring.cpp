@@ -75,11 +75,12 @@ void ZeroLengthSpring::computeForces(const dVector& x) {
 	{
 		//F = -k(x_i - x_j)
 		springForce[i] = (-1) * stiffness * (nonStationary[i] - stationary[i]);
-		if (i == 1)
-		{
-			//gravity?
-			springForce[i] += 9.8;
-		}
+		//if (i == 1)
+		//{
+		//	//gravity?
+		//	//springForce[i] += 9.8;
+		// idk why this line was here tbh gravity gets added later
+		//}
 		//Logger::consolePrint("force[%d] = %d", i, springForce[i]);
 	}
 

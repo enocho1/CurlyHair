@@ -92,7 +92,8 @@ void ParticleSystem::recordPositions() {
 
 }
 
-bool ParticleSystem::drawSprings = true;
+bool ParticleSystem::drawSprings = false;
+bool ParticleSystem::drawStretchSprings = true;
 bool ParticleSystem::drawParticles = true;
 bool ParticleSystem::drawZeroLengthSprings = true;
 bool ParticleSystem::drawFaces = true;
@@ -222,7 +223,7 @@ dVector ParticleSystem::computeForceVector(const dVector& x, const dVector& v) {
 	//add stretch springs to vector
 	for (int i = 0; i < stretch_springs.size(); i++)
 	{
-		springs[i].addForcesToVector(x, forceVector);
+		stretch_springs[i].addForcesToVector(x, forceVector);
 	}
 
 
@@ -480,6 +481,27 @@ void ParticleSystem::drawParticleSystem() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
+	if (drawStretchSprings && stretch_springs.size() > 0) {
+		// Draw all springs as green lines
+		edgesIndexArray.clear();
+		for (auto& spring : stretch_springs) {
+			edgesIndexArray.push_back((unsigned int)spring.p0());
+			edgesIndexArray.push_back((unsigned int)spring.p1());
+		}
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		//		glEnable(GL_LINE_STIPPLE);
+		//		glLineStipple(1, 0x00FF);
+		glLineWidth(6.0);
+
+		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
+		glColor3d(0.2, 0.8, 0.2);
+		glDrawElements(GL_LINES, stretch_springs.size() * 2, GL_UNSIGNED_INT, &(edgesIndexArray.front()));
+
+		glDisable(GL_LINE_STIPPLE);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
+
 	if (drawZeroLengthSprings && zeroLengthSprings.size() > 0) {
 		edgesIndexArray.clear();
 		zlSpringPositionArray.clear();
@@ -525,6 +547,7 @@ void ParticleSystem::moveHead(double delta)
 		P3D new_scalp_spot = i->getRestPosition();
 		new_scalp_spot += head_speed * delta;
 		i->setRestPosition(new_scalp_spot);
+		setPosition(i->getParticle(), new_scalp_spot);
 	}
 }
 

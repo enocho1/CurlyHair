@@ -3,7 +3,7 @@
 #include "Constants.h"
 
 enum IntegratorType {
-	forwardEuler, symplecticEuler, backwardEuler
+	forwardEuler, symplecticEuler, backwardEuler,pixarTaz
 };
 
 IntegratorType integrator = symplecticEuler;
@@ -175,6 +175,10 @@ bool MassSpringApp::onKeyEvent(int key, int action, int mods) {
 			Logger::consolePrint("Using forward Euler");
 			integrator = forwardEuler;
 		}
+		else if (key == 'F') {
+			Logger::consolePrint("using pixar's integration method");
+			integrator = pixarTaz;
+		}
 		else if (key == 'S') {
 			Logger::consolePrint("Using symplectic Euler");
 			integrator = symplecticEuler;
@@ -233,6 +237,7 @@ void MassSpringApp::process() {
 		case forwardEuler: particleSystem->integrate_FE(DELTA_T); break;
 		case symplecticEuler: particleSystem->integrate_SE(DELTA_T); break;
 		case backwardEuler: particleSystem->integrate_BE(DELTA_T); break;
+		case pixarTaz: particleSystem->integrate_Pxr(DT_OUTER, DT_FORCE, DT_DAMPING); break;
 		}
 		if (pickedParticle > -1) {
 			particleSystem->setVelocity(pickedParticle, V3D(0, 0, 0));

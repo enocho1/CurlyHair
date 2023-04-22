@@ -72,6 +72,7 @@ public:
 	void integrate_SE(double delta);
 	dVector newtonStep(double delta, dVector &positions, dVector &velocities, dVector &masses, dVector &v_guess);
 	void integrate_BE(double delta);
+	void integrate_Pxr(double outer, double force_dt, double damping_dt);
 	string inputName;
 
 	void manageCollisions();

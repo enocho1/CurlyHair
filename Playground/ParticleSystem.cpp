@@ -395,6 +395,15 @@ void ParticleSystem::integrate_BE(double delta) {
 	manageCollisions();
 }
 
+void ParticleSystem::integrate_Pxr(double outer, double force_dt, double damping_dt)
+{
+	//check collisions
+	//integrate forces: for loop
+	//integrate damping: for loop
+	//update
+	manageCollisions();
+}
+
 //get hair to collide with the head-sphere
 void ParticleSystem::manageCollisions() {
 	if (enableCollision) {

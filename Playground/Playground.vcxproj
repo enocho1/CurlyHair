@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Hair.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MS_SparseSquare.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
@@ -115,6 +116,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Hair.h" />
     <ClInclude Include="MS_SparseSquare.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="ParticleSystemLoader.h" />

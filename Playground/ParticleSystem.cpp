@@ -314,8 +314,10 @@ void ParticleSystem::integrate_FE(double delta) {
 void ParticleSystem::integrate_SE(double delta) {
 	dVector force = computeForceVector(positions, velocities);
 
-	// TODO (Part 2): Implement symplectic Euler.
+	//symplectic Euler.
 	//@enoch
+	auto ff = force.sum();
+	Logger::consolePrint("forces integrated set: %d N", ff);
 	for (int i = 0; i < positions.size(); i++)
 	{
 		velocities[i] = velocities[i] + (force[i] / masses[i / 3]) * delta;
@@ -395,13 +397,35 @@ void ParticleSystem::integrate_BE(double delta) {
 	manageCollisions();
 }
 
-void ParticleSystem::integrate_Pxr(double outer, double force_dt, double damping_dt)
+void ParticleSystem::integrate_Pxr(double outer)
 {
 	//check collisions
-	//integrate forces: for loop
-	//integrate damping: for loop
-	//update
+	//integrate
+
+	dVector force = dVector::Zero(positions.size());
+	for (int i = 0; i < hairs.size(); i++)
+	{
+		hairs[i].integrateForces(positions, velocities, force);
+	}
+	//symplectic Euler.
+	//@enoch
+	auto ff = force.sum();
+	Logger::consolePrint("forces integrated set: %d N", ff);
+	for (int i = 0; i < positions.size(); i++)
+	{
+		velocities[i] = velocities[i] + (force[i] / masses[i / 3]) * outer;
+		positions[i] = positions[i] + (velocities[i] * outer);
+	}
+	moveHead(outer);
 	manageCollisions();
+}
+
+void ParticleSystem::setHairs(vector<Hair> h)
+{
+	hairs = h;
+	for (auto & hr : hairs) {
+		hr.initializeHairVars(positions);
+	}
 }
 
 //get hair to collide with the head-sphere

@@ -175,7 +175,7 @@ bool MassSpringApp::onKeyEvent(int key, int action, int mods) {
 			Logger::consolePrint("Using forward Euler");
 			integrator = forwardEuler;
 		}
-		else if (key == 'F') {
+		else if (key == 'P') {
 			Logger::consolePrint("using pixar's integration method");
 			integrator = pixarTaz;
 		}
@@ -237,7 +237,7 @@ void MassSpringApp::process() {
 		case forwardEuler: particleSystem->integrate_FE(DELTA_T); break;
 		case symplecticEuler: particleSystem->integrate_SE(DELTA_T); break;
 		case backwardEuler: particleSystem->integrate_BE(DELTA_T); break;
-		case pixarTaz: particleSystem->integrate_Pxr(DT_OUTER, DT_FORCE, DT_DAMPING); break;
+		case pixarTaz: particleSystem->integrate_Pxr(DT_OUTER); break;
 		}
 		if (pickedParticle > -1) {
 			particleSystem->setVelocity(pickedParticle, V3D(0, 0, 0));

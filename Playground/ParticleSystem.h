@@ -8,6 +8,7 @@
 #include <list>
 #include "GUILib/GLMesh.h"
 #include <string>
+#include "Hair.h"
 
 using namespace std;
 
@@ -31,6 +32,7 @@ private:
 	float radius;
 	string capturedData;
 	int frameCount;
+	vector<Hair> hairs;
 	
 
 	// A list of all generic springs in the system.
@@ -72,7 +74,8 @@ public:
 	void integrate_SE(double delta);
 	dVector newtonStep(double delta, dVector &positions, dVector &velocities, dVector &masses, dVector &v_guess);
 	void integrate_BE(double delta);
-	void integrate_Pxr(double outer, double force_dt, double damping_dt);
+	void integrate_Pxr(double outer);
+	void setHairs(vector<Hair> h);
 	string inputName;
 
 	void manageCollisions();

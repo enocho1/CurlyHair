@@ -62,7 +62,15 @@ def generateHair(radius, density, spread="radial", mode=0):
         if spread == "radial":
             direction = base
         elif spread == "horizontal":
-            direction = base * np.array([1, 0, 1])
+            direction = np.array([1, 0, 0])
+        elif spread == "up":
+            direction = np.array([0, 1, 0])
+        hair.append(newHair(base, direction, 1, 5))
+    for base in roots:
+        if spread == "radial":
+            direction = base
+        elif spread == "horizontal":
+            direction = np.array([-1, 0, 0])
         elif spread == "up":
             direction = np.array([0, 1, 0])
         hair.append(newHair(base, direction, 1, 5))
@@ -150,8 +158,8 @@ def generateExperiments(experiments):
                         F.write(f"t {v} {v+1} 5000000 4472\n")
                 else:
                     hair = all_the_hairs[i][j] + center
-                    F.write(f"t {v} {v+1} 5000000 4472\n")
                     F.write(f"z {v} {hair[0]} {hair[1]} {hair[2]} 2000\n")
+                    F.write(f"t {v} {v+1} 5000000 4472\n")
                 v += 1
             F.write(f"c {center[0]} {center[1]} {center[2]}\n")
             F.write(f"h {hspeed[0]} {hspeed[1]} {hspeed[2]}\n")

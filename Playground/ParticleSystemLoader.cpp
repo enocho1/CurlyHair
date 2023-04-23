@@ -42,6 +42,8 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 	vector<SpringData> sds;
 	vector<StretchData> strds;
 	vector<ZeroLengthSpringData> zls;
+	vector<Hair> hairs;
+	vector<int> hair_points;
 	bool error = false;
 
 	int lineNum = 0;
@@ -49,10 +51,14 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 	P3D C_enter = P3D(0,0,0);
 	V3D H_speed = V3D(0, 0, 0);
 
+	bool first_hair = true;
+	Hair current_hair;
+
 	while (getline(infile, line)) {
 		lineNum++;
 		istringstream iss(line);
 		char c;
+		
 		if (line.at(0) == 'p') {
 			double x1, x2, x3, v1, v2, v3, m;
 			if (!(iss >> c >> x1 >> x2 >> x3 >> v1 >> v2 >> v3 >> m)) {
@@ -104,6 +110,7 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 				strd.stiffness = k;
 				strd.damping = cs;
 				strds.push_back(strd);
+				hair_points.push_back(p2);
 			}
 		}
 		else if (line.at(0) == 'z') {
@@ -122,6 +129,22 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 				zl.x0 = P3D(x1, x2, x3);
 				zl.stiffness = k;
 				zls.push_back(zl);
+				//new hair i think
+				
+				if (!first_hair) {
+					current_hair.setPoints(hair_points);
+					hairs.push_back(current_hair);
+					hair_points.clear();
+
+				}
+				else {
+					first_hair = false;
+				}
+				Hair new_hair;
+				current_hair = new_hair;
+				hair_points.push_back(p);
+
+				
 			}
 
 		}
@@ -165,6 +188,8 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 	}
 
 	else {
+		current_hair.setPoints(hair_points);
+		hairs.push_back(current_hair);
 		ParticleSystem* system = new ParticleSystem(ps);
 		for (auto const &spring : sds) {
 			system->addSpring(spring.p1, spring.p2, spring.stiffness);
@@ -179,6 +204,9 @@ ParticleSystem* ParticleSystemLoader::loadFromMSS(string filename) {
 		system->setCenter(C_enter);
 		system->setHeadSpeed(H_speed);
 		Logger::consolePrint("NEW DETAILS SET");
+
+		system->setHairs(hairs);
+		Logger::consolePrint("NEW HAIRS SET");
 
 		std::istringstream ss(filename);
 		std::string token;

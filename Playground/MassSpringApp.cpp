@@ -3,7 +3,7 @@
 #include "Constants.h"
 
 enum IntegratorType {
-	forwardEuler, symplecticEuler, backwardEuler,pixarTaz
+	forwardEuler, symplecticEuler, backwardEuler, pixarTaz
 };
 
 IntegratorType integrator = symplecticEuler;
@@ -11,7 +11,7 @@ IntegratorType integrator = symplecticEuler;
 double MassSpringApp::k = DEFAULT_STIFFNESS;
 
 MassSpringApp::MassSpringApp() {
-	setWindowTitle("Hair Simulator");
+	setWindowTitle("enoch's super awesome curly hair simulator.");
 	TwAddSeparator(mainMenuBar, "sep2", "");
 
 	TwAddVarRW(mainMenuBar, "Draw Particles", TW_TYPE_BOOLCPP, &ParticleSystem::drawParticles, "");
@@ -39,10 +39,10 @@ MassSpringApp::MassSpringApp() {
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");
 
 	pickedParticle = -1;
-	
+
 }
 
-MassSpringApp::~MassSpringApp(void){
+MassSpringApp::~MassSpringApp(void) {
 	delete particleSystem;
 }
 
@@ -230,7 +230,16 @@ void MassSpringApp::process() {
 		restart();
 	}
 	// Take enough steps so that we are always running in (close to) real time
-	int numSteps = (int)((1. / 30.) / DELTA_T);
+	int numSteps;
+	if (integrator == pixarTaz)
+	{
+		numSteps = (int)((1. / 30.) / DT_OUTER);
+	}
+	else {
+		numSteps = (int)((1. / 30.) / DELTA_T);
+	}
+
+
 	if (numSteps < 1) numSteps = 1;
 	for (int i = 0; i < numSteps; i++) {
 		switch (integrator) {
@@ -269,7 +278,7 @@ void MassSpringApp::restart() {
 	else {
 		appIsRunning = false;
 	}
-	
+
 
 }
 

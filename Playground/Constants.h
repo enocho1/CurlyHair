@@ -16,7 +16,7 @@
 //okay here's the pixar stuff
 
 //curly hair vars
-#define DT_OUTER 0.000694416
+#define DT_OUTER 9.25887e-05
 
 
 

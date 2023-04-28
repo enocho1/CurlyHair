@@ -23,13 +23,22 @@ class Hair {
 private:
 	vector<int> particles;// the 0th entry should be the route and it's assumed that a spring exists between each connected particle.
 	vector<V3D> rest_x;
-	vector<V3D> rest_t;
-	vector<V3D> t_vecs;
+	
+	vector<V3D> rest_smooth;
+	vector<V3D> smoothed;
+
 	vector<Matrix3x3> rest_frames;
 	vector<Matrix3x3> frames;
 
+	vector<V3D> rest_t;
+	vector<V3D> t_vecs;
+
+	
+
 	//returns the smoothed version of whatever attribute you pass it (usually pos, but sometimes vels)
-	vector<V3D> smooth(const dVector& x);
+	void smooth(const dVector& x, double alpha);
+	void computeSmooth(const dVector& x, double alpha);
+	void computeInitialSmooth(const dVector& x, double alpha);
 	void integrateDamping(vector<V3D>& v, vector<V3D>& f);
 	void initializeFrames(const dVector& x);
 	void updateFrames(const dVector& x);

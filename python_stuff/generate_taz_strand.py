@@ -65,7 +65,7 @@ def generateHair(radius, density, spread="radial", mode=0):
             direction = np.array([1, 0, 0])
         elif spread == "up":
             direction = np.array([0, 1, 0])
-        hair.append(newHair(base, direction, 1, 5))
+        hair.append(newHair(base, direction, 1, 40))
     for base in roots:
         if spread == "radial":
             direction = base
@@ -73,7 +73,7 @@ def generateHair(radius, density, spread="radial", mode=0):
             direction = np.array([-1, 0, 0])
         elif spread == "up":
             direction = np.array([0, 1, 0])
-        hair.append(newHair(base, direction, 1, 5))
+        hair.append(newHair(base, direction, 1, 40)) ##enoch length!!
     return hair
 
 

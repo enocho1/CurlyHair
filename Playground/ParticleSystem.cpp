@@ -314,10 +314,9 @@ void ParticleSystem::integrate_FE(double delta) {
 void ParticleSystem::integrate_SE(double delta) {
 	dVector force = computeForceVector(positions, velocities);
 
-	//symplectic Euler.
-	//@enoch
-	auto ff = force.sum();
-	Logger::consolePrint("forces integrated set: %d N", ff);
+	////symplectic Euler.
+	////@enoch
+	
 	for (int i = 0; i < positions.size(); i++)
 	{
 		velocities[i] = velocities[i] + (force[i] / masses[i / 3]) * delta;
@@ -409,8 +408,6 @@ void ParticleSystem::integrate_Pxr(double outer)
 	}
 	//symplectic Euler.
 	//@enoch
-	auto ff = force.sum();
-	Logger::consolePrint("forces integrated set: %d N", ff);
 	for (int i = 0; i < positions.size(); i++)
 	{
 		velocities[i] = velocities[i] + (force[i] / masses[i / 3]) * outer;

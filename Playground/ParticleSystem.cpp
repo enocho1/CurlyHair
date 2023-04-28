@@ -17,7 +17,7 @@
 ParticleSystem::ParticleSystem(vector<Particle>& particles)
 {
 	center = P3D(0, 0, 0);
-	head_speed = V3D(0,0,0);
+	head_speed = V3D(0, 0, 0);
 	radius = 1.0f;
 	drawSprings = true;
 	drawParticles = true;
@@ -88,7 +88,7 @@ void ParticleSystem::recordPositions() {
 	else {
 		saveData();
 	}
-	
+
 
 }
 
@@ -155,7 +155,7 @@ void ParticleSystem::addSpring(int p1, int p2, double stiffness) {
 
 void ParticleSystem::addStretch(int p1, int p2, double stiffness, double damping)
 {
-	Stretch newSpring(p1, p2, stiffness,damping, positions);
+	Stretch newSpring(p1, p2, stiffness, damping, positions);
 	stretch_springs.push_back(newSpring);
 }
 
@@ -219,7 +219,7 @@ dVector ParticleSystem::computeForceVector(const dVector& x, const dVector& v) {
 	{
 		springs[i].addForcesToVector(x, forceVector);
 	}
-	
+
 	//add stretch springs to vector
 	for (int i = 0; i < stretch_springs.size(); i++)
 	{
@@ -277,7 +277,7 @@ MS_SparseSquare ParticleSystem::computeForceJacobian(const dVector& x, const dVe
 
 // Compute the vector of accelerations experienced by each particle.
 dVector ParticleSystem::computeAccelerations(const dVector& x, const dVector& v, const dVector& m) {
-	
+
 
 	// TODO (Part 1): Implement computation of accelerations from forces.
 	dVector acceleration = dVector::Zero(x.size());
@@ -316,7 +316,7 @@ void ParticleSystem::integrate_SE(double delta) {
 
 	////symplectic Euler.
 	////@enoch
-	
+
 	for (int i = 0; i < positions.size(); i++)
 	{
 		velocities[i] = velocities[i] + (force[i] / masses[i / 3]) * delta;
@@ -420,7 +420,7 @@ void ParticleSystem::integrate_Pxr(double outer)
 void ParticleSystem::setHairs(vector<Hair> h)
 {
 	hairs = h;
-	for (auto & hr : hairs) {
+	for (auto& hr : hairs) {
 		hr.initializeHairVars(positions);
 	}
 }
@@ -429,29 +429,29 @@ void ParticleSystem::setHairs(vector<Hair> h)
 void ParticleSystem::manageCollisions() {
 	if (enableCollision) {
 		//go through particles
-	int n = numParticles;
-	auto c = getCenter();
-	for (int i = 0; i < n; i++) {
-		//get x and check to see whether or not it's inside the sphere
-		V3D x = V3D(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]) - c;
-		double dist = x.norm();
- 		if (dist < radius) {
-			//particle is in the sphere, so im gonna push it back to the surface
-			x.normalize();
-			x *= radius; //basically have it be at the same anggle, kinda just pushed backwards if loooking at the center
-			V3D new_pos = c + x;
-			setPosition(i, P3D(new_pos));
+		int n = numParticles;
+		auto c = getCenter();
+		for (int i = 0; i < n; i++) {
+			//get x and check to see whether or not it's inside the sphere
+			V3D x = V3D(positions[3 * i], positions[3 * i + 1], positions[3 * i + 2]) - c;
+			double dist = x.norm();
+			if (dist < radius) {
+				//particle is in the sphere, so im gonna push it back to the surface
+				x.normalize();
+				x *= radius; //basically have it be at the same anggle, kinda just pushed backwards if loooking at the center
+				V3D new_pos = c + x;
+				setPosition(i, P3D(new_pos));
 
-			//now to figure out its new velocity. first, i need the current velocity
-			V3D v = getVelocity(i);
-			V3D v_2 = reflectVector(v, x.normalized());
-			//the same momentum atm, but i think it will be better w some damping, how about v = 0.6 original v
-			v_2 *= 0.6;
-			setVelocity(i, v_2);
+				//now to figure out its new velocity. first, i need the current velocity
+				V3D v = getVelocity(i);
+				V3D v_2 = reflectVector(v, x.normalized());
+				//the same momentum atm, but i think it will be better w some damping, how about v = 0.6 original v
+				v_2 *= 0.6;
+				setVelocity(i, v_2);
+			}
 		}
 	}
-	}
-	
+
 
 }
 
@@ -531,6 +531,27 @@ void ParticleSystem::drawParticleSystem() {
 		glDisable(GL_LINE_STIPPLE);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
+	if (drawStretchSprings && stretch_springs.size() > 0) {
+		// Draw all springs as green lines
+		edgesIndexArray.clear();
+		for (auto& spring : stretch_springs) {
+			edgesIndexArray.push_back((unsigned int)spring.p0());
+			edgesIndexArray.push_back((unsigned int)spring.p1());
+		}
+
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		//		glEnable(GL_LINE_STIPPLE);
+		//		glLineStipple(1, 0x00FF);
+		glLineWidth(6.0);
+
+		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
+		glColor3d(0.2, 0.8, 0.2);
+		glDrawElements(GL_LINES, stretch_springs.size() * 2, GL_UNSIGNED_INT, &(edgesIndexArray.front()));
+
+		glDisable(GL_LINE_STIPPLE);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
 
 	if (drawZeroLengthSprings && zeroLengthSprings.size() > 0) {
 		edgesIndexArray.clear();
@@ -562,6 +583,50 @@ void ParticleSystem::drawParticleSystem() {
 		//		glDisable(GL_LINE_STIPPLE);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
+
+	if (drawZeroLengthSprings && enableGravity > 0) {
+		edgesIndexArray.clear();
+		framePositionArray.clear();
+		int counter = 0;
+		for (auto& h : hairs) {
+			h.vis(positions);
+
+			int i = 0;
+			for (auto& f : h.frames) {
+				int base = h.particles[i];
+
+				for (int j = 0; j < 3; j++) {
+					for (int l = 0; l < 3; l++) {
+						framePositionArray.push_back(positions[base * 3 + l]);
+					}
+					auto cc = f.col(j);
+					for (int k = 0; k < 3; k++) {
+						framePositionArray.push_back(cc[k] + positions[base * 3 + k]);
+					}
+					edgesIndexArray.push_back(counter);
+					edgesIndexArray.push_back(counter + 1);
+					counter += 2;
+				}
+				i++;
+			}
+
+		}
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		//		glEnable(GL_LINE_STIPPLE);
+		//		glLineStipple(1, 0x00FF);
+		glLineWidth(6.0);
+
+		glVertexPointer(3, GL_DOUBLE, 0, &(framePositionArray.front()));
+		glColor3d(0.2, 0.2, 0.8);
+		glDrawElements(GL_LINES, hairs[0].frames.size() * 6*hairs.size(), GL_UNSIGNED_INT, &(edgesIndexArray.front()));
+
+		//		glDisable(GL_LINE_STIPPLE);
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
+
+
+
 }
 
 void ParticleSystem::setMesh(GLMesh* m) {

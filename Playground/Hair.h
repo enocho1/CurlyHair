@@ -21,14 +21,12 @@
 */
 class Hair {
 private:
-	vector<int> particles;// the 0th entry should be the route and it's assumed that a spring exists between each connected particle.
 	vector<V3D> rest_x;
 	
 	vector<V3D> rest_smooth;
 	vector<V3D> smoothed;
 
 	vector<Matrix3x3> rest_frames;
-	vector<Matrix3x3> frames;
 
 	vector<V3D> rest_t;
 	vector<V3D> t_vecs;
@@ -44,7 +42,12 @@ private:
 	void updateFrames(const dVector& x);
 
 public:
+	vector<int> particles;// the 0th entry should be the route and it's assumed that a spring exists between each connected particle.
+
+	vector<Matrix3x3> frames;
+
 	void integrateForces(const dVector& x, const dVector& v, dVector& f);
 	void setPoints(vector<int> points);
 	void initializeHairVars(const dVector &x);
+	void vis(const dVector& x);
 };

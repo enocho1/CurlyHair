@@ -28,11 +28,11 @@ void Hair::smooth(const dVector& x, double alpha)
 		auto p1 = P3D(x[current], x[current + 1], x[current + 2]);
 		auto p2 = P3D(x[prev], x[prev + 1], x[prev + 2]);
 
-		V3D d = 1.0 * (1.0 - beta) * d_1 - (1.0 - beta) * (1.0 - beta) * d_2 + beta * beta * (p2 - p1);
+		V3D d = 2.0 * (1.0 - beta) * d_1 - (1.0 - beta) * (1.0 - beta) * d_2 + beta * beta * (p1-p2);
 
 		auto next = d + smoothed[smoothed.size() - 1];
 		smoothed.push_back(next);
-		d_2 = d;
+		d_2 = d_1;
 		d_1 = d;
 
 	}
@@ -58,7 +58,7 @@ void Hair::initializeFrames(const dVector& x)
 void Hair::updateFrames(const dVector& x)
 {
 	//smooth
-	smooth(x, 10);
+	smooth(x, 4);
 	V3D t, t_1;
 	vector<V3D>normals;
 	
@@ -73,26 +73,29 @@ void Hair::updateFrames(const dVector& x)
 
 	Matrix3x3 frame;
 
+	frames.clear();
+
 	
 
 
 	//parallel transport over smoothed curve
 	for (int i = 0; i < particles.size(); i++) {
 		if (i + 1 < particles.size()) {
-			t = smoothed[i + 1] - smoothed[i];
+			t = (smoothed[i + 1] - smoothed[i]).normalized();
 		}
 		else {
-			t = smoothed[i] - smoothed[i - 1];
+			t = (smoothed[i] - smoothed[i - 1]).normalized();
 		}
 		if (i + 2 < particles.size()) {
-			t_1 = smoothed[i + 2] - smoothed[i + 1];
+			t_1 = (smoothed[i + 2] - smoothed[i + 1]).normalized();
 		}
 		else {
 			t_1 = t;
 		}
+		//t = first_tangent; // @enoch look
 		bitangent = t.cross(t_1);
 
-		if (t.length() == 0) {
+		if (bitangent.length() == 0) {
 			normals.push_back(normals[normals.size() - 1]);
 		}
 		else {
@@ -102,9 +105,10 @@ void Hair::updateFrames(const dVector& x)
 		}
 		bitangent = t.cross(normals[i]);
 		frame.col(0) = t;
-		frame.col(2) = bitangent;
-		frame.col(3) = normals[i];
+		frame.col(1) = bitangent;
+		frame.col(2) = normals[i];
 
+		frames.push_back(frame);
 		
 
 	}
@@ -167,4 +171,9 @@ void Hair::setPoints(vector<int> points)
 
 void Hair::initializeHairVars(const dVector& x)
 {
+}
+
+void Hair::vis(const dVector& x)
+{
+	updateFrames(x);
 }

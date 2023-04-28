@@ -53,6 +53,13 @@ private:
 	vector<unsigned int> pointsIndexArray;
 	vector<unsigned int> edgesIndexArray;
 	vector<double> zlSpringPositionArray;
+	
+	
+	//for frame visualisation
+	vector<unsigned int> frameIndexArray;
+	vector<double> framePositionArray;
+
+
 	int count;
 
 	GLMesh* mesh;

@@ -7,7 +7,7 @@
 
 
 #define K_STRETCH 5e06
-#define K_BEND 100
+#define K_BEND 400
 
 #define DT_FORCE 4.62944e-05
 #define DT_DAMPING 4.62944e-06 

@@ -123,7 +123,7 @@ void Hair::initializeFrames(const dVector& x)
 		auto p2 = P3D(x[index2], x[index2 + 1], x[index2 + 2]);
 		V3D e = p2 - p1;
 
-		V3D t = rest_frames[i - 1] * e;
+		V3D t = rest_frames[i - 1].transpose() * e;
 
 		rest_t.push_back(t);
 	}

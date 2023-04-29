@@ -584,29 +584,67 @@ void ParticleSystem::drawParticleSystem() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
+	//if (drawZeroLengthSprings && enableGravity > 0) {
+	//	edgesIndexArray.clear();
+	//	framePositionArray.clear();
+	//	int counter = 0;
+	//	for (auto& h : hairs) {
+	//		h.vis(positions);
+
+	//		int i = 0;
+	//		for (auto& f : h.getFrames()) {
+	//			int base = h.particles[i];
+
+	//			for (int j = 0; j < 3; j++) {
+	//				for (int l = 0; l < 3; l++) {
+	//					framePositionArray.push_back(positions[base * 3 + l]);
+	//				}
+	//				auto cc = f.col(j);
+	//				for (int k = 0; k < 3; k++) {
+	//					framePositionArray.push_back(cc[k] + positions[base * 3 + k]);
+	//				}
+	//				edgesIndexArray.push_back(counter);
+	//				edgesIndexArray.push_back(counter + 1);
+	//				counter += 2;
+	//			}
+	//			i++;
+	//		}
+
+	//	}
+
+	//	glEnableClientState(GL_VERTEX_ARRAY);
+	//	//		glEnable(GL_LINE_STIPPLE);
+	//	//		glLineStipple(1, 0x00FF);
+	//	glLineWidth(6.0);
+
+	//	glVertexPointer(3, GL_DOUBLE, 0, &(framePositionArray.front()));
+	//	glColor3d(0.2, 0.2, 0.8);
+	//	glDrawElements(GL_LINES, hairs[0].getFrames().size() * 6 * hairs.size(), GL_UNSIGNED_INT, &(edgesIndexArray.front()));
+
+	//	//		glDisable(GL_LINE_STIPPLE);
+	//	glDisableClientState(GL_VERTEX_ARRAY);
+	//}
+
 	if (drawZeroLengthSprings && enableGravity > 0) {
+		glColor3d(1.0, 0.3, 0.8);
 		edgesIndexArray.clear();
 		framePositionArray.clear();
 		int counter = 0;
 		for (auto& h : hairs) {
 			h.vis(positions);
 
-			int i = 0;
-			for (auto& f : h.frames) {
+			int i = 1;
+			for (auto& t : h.getTVecs()) {
 				int base = h.particles[i];
-
-				for (int j = 0; j < 3; j++) {
-					for (int l = 0; l < 3; l++) {
-						framePositionArray.push_back(positions[base * 3 + l]);
-					}
-					auto cc = f.col(j);
-					for (int k = 0; k < 3; k++) {
-						framePositionArray.push_back(cc[k] + positions[base * 3 + k]);
-					}
-					edgesIndexArray.push_back(counter);
-					edgesIndexArray.push_back(counter + 1);
-					counter += 2;
+				for (int l = 0; l < 3; l++) {
+					framePositionArray.push_back(positions[base * 3 + l]);
 				}
+				for (int k = 0; k < 3; k++) {
+					framePositionArray.push_back(t[k] + positions[base * 3 + k]);
+				}
+				edgesIndexArray.push_back(counter);
+				edgesIndexArray.push_back(counter + 1);
+				counter += 2;
 				i++;
 			}
 
@@ -619,12 +657,11 @@ void ParticleSystem::drawParticleSystem() {
 
 		glVertexPointer(3, GL_DOUBLE, 0, &(framePositionArray.front()));
 		glColor3d(0.2, 0.2, 0.8);
-		glDrawElements(GL_LINES, hairs[0].frames.size() * 6*hairs.size(), GL_UNSIGNED_INT, &(edgesIndexArray.front()));
+		glDrawElements(GL_LINES, hairs[0].getTVecs().size() * 2 * hairs.size(), GL_UNSIGNED_INT, &(edgesIndexArray.front()));
 
 		//		glDisable(GL_LINE_STIPPLE);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
-
 
 
 }

@@ -7,6 +7,7 @@
 
 
 #define K_STRETCH 5e06
+#define K_BEND 100
 
 #define DT_FORCE 4.62944e-05
 #define DT_DAMPING 4.62944e-06 
@@ -27,6 +28,7 @@ private:
 	vector<V3D> smoothed;
 
 	vector<Matrix3x3> rest_frames;
+	vector<Matrix3x3> frames;
 
 	vector<V3D> rest_t;
 	vector<V3D> t_vecs;
@@ -44,7 +46,8 @@ private:
 public:
 	vector<int> particles;// the 0th entry should be the route and it's assumed that a spring exists between each connected particle.
 
-	vector<Matrix3x3> frames;
+	const vector<Matrix3x3>& const getFrames() { return frames; };
+	const vector<V3D>& const getTVecs() { return t_vecs; };
 
 	void integrateForces(const dVector& x, const dVector& v, dVector& f);
 	void setPoints(vector<int> points);

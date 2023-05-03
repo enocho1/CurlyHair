@@ -82,6 +82,7 @@ public:
 	dVector newtonStep(double delta, dVector &positions, dVector &velocities, dVector &masses, dVector &v_guess);
 	void integrate_BE(double delta);
 	void integrate_Pxr(double outer);
+	void integrate_Pxr_Alt(double outer);
 	void setHairs(vector<Hair> h);
 	string inputName;
 

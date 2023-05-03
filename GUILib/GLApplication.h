@@ -47,7 +47,7 @@ protected:
 	bool appIsRunning = false;
 	bool waitForFrameRate = true;
 	//this is the desired frame rate, specified in FPS
-	double desiredFrameRate = 30;
+	double desiredFrameRate = 24;
 	double animationSpeedupFactor = 1.0;
 
 	// The size of the window

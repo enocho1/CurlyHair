@@ -6,8 +6,17 @@
 #include <vector>
 
 
-#define K_STRETCH 5e06
-#define K_BEND 400
+#define K_STRETCH 4.8e05
+#define K_BEND 5.0e02
+#define K_CORE 0//1.5e04
+
+#define C_STRETCH 4500
+#define C_BEND 50
+#define C_CORE 1.0e03
+
+
+#define ALPHA_BEND 30.0
+#define ALPHA_CORE 3.0
 
 #define DT_FORCE 4.62944e-05
 #define DT_DAMPING 4.62944e-06 
@@ -22,18 +31,23 @@
 */
 class Hair {
 private:
+
 	vector<V3D> rest_x;
-	
+
 	vector<V3D> rest_smooth;
 	vector<V3D> smoothed;
+
+	vector<V3D> v_smoothed;
 
 	vector<Matrix3x3> rest_frames;
 	vector<Matrix3x3> frames;
 
 	vector<V3D> rest_t;
 	vector<V3D> t_vecs;
+	vector<V3D> rest_d;
+	vector<V3D> d_vecs;
 
-	
+
 
 	//returns the smoothed version of whatever attribute you pass it (usually pos, but sometimes vels)
 	void smooth(const dVector& x, double alpha);
@@ -42,15 +56,19 @@ private:
 	void integrateDamping(vector<V3D>& v, vector<V3D>& f);
 	void initializeFrames(const dVector& x);
 	void updateFrames(const dVector& x);
+	void updateDVecs(const dVector& x, double alpha, vector<V3D>& d_list);
 
 public:
 	vector<int> particles;// the 0th entry should be the route and it's assumed that a spring exists between each connected particle.
 
 	const vector<Matrix3x3>& const getFrames() { return frames; };
 	const vector<V3D>& const getTVecs() { return t_vecs; };
+	const vector<V3D>& const getDVecs() { return d_vecs; };
 
 	void integrateForces(const dVector& x, const dVector& v, dVector& f);
 	void setPoints(vector<int> points);
-	void initializeHairVars(const dVector &x);
+	void initializeHairVars(const dVector& x);
 	void vis(const dVector& x);
+	void updateHead(dVector& x);
+
 };

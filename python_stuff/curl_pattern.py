@@ -8,9 +8,9 @@ import random
 def newHair(root, direction, step, length):
     points = []
     p_final = []
-    p0 = np.array([0, 1, 0])
+    p0 = np.array([1, 0, 0])
     for x in range (length):
-        points.append(np.array([x, math.cos(x), math.sin(x)]) + root - p0)
+        points.append(np.array([0.3*math.cos(x), -x,0.3*math.sin(x)]) + root - p0)
     p_final.append(points[0])
     for x in range (1,length):
         edge = points[x]-points[x-1]
@@ -79,7 +79,7 @@ def generateHair(radius, density, spread="radial", mode=0):
             direction = np.array([1, 0, 0])
         elif spread == "up":
             direction = np.array([0, 1, 0])
-        hair.append(newHair(base, direction, 1, 10))
+        hair.append(newHair(base, direction, 1, 30))
     # for base in roots:
     #     if spread == "radial":
     #         direction = base

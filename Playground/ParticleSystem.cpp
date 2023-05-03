@@ -399,22 +399,34 @@ void ParticleSystem::integrate_BE(double delta) {
 void ParticleSystem::integrate_Pxr(double outer)
 {
 	//check collisions
-	//integrate
 
+	//integrate forces
+	dVector x_temp = positions;
+	dVector v_temp = velocities;
 	dVector force = dVector::Zero(positions.size());
-	for (int i = 0; i < hairs.size(); i++)
+	for (int t = 0; t < 15; t++)
 	{
-		hairs[i].integrateForces(positions, velocities, force);
+		force = dVector::Zero(positions.size());
+		for (int i = 0; i < hairs.size(); i++)
+		{
+			hairs[i].integrateForces(x_temp, velocities, force);
+		}
+		velocities = velocities + force  * outer/15.0;
+	
 	}
-	//symplectic Euler.
-	//@enoch
-	for (int i = 0; i < positions.size(); i++)
-	{
-		velocities[i] = velocities[i] + (force[i] / masses[i / 3]) * outer;
-		positions[i] = positions[i] + (velocities[i] * outer);
+
+	positions = positions + velocities * outer;
+	for (int i = 0; i < hairs.size(); i++) {
+		hairs[i].updateHead(positions);
+
 	}
-	moveHead(outer);
-	manageCollisions();
+
+	//moveHead(0.000694416);
+	//manageCollisions();
+}
+
+void ParticleSystem::integrate_Pxr_Alt(double outer)
+{
 }
 
 void ParticleSystem::setHairs(vector<Hair> h)
@@ -633,7 +645,7 @@ void ParticleSystem::drawParticleSystem() {
 		for (auto& h : hairs) {
 			h.vis(positions);
 
-			int i = 1;
+			int i = 0;
 			for (auto& t : h.getTVecs()) {
 				int base = h.particles[i];
 				for (int l = 0; l < 3; l++) {

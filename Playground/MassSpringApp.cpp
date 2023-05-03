@@ -229,14 +229,14 @@ void MassSpringApp::process() {
 	if (particleSystem->ready_to_quit) {
 		restart();
 	}
-	// Take enough steps so that we are always running in (close to) real time
+	// Take enough steps so that we are always running in (close to) real time (24fps)
 	int numSteps;
 	if (integrator == pixarTaz)
 	{
-		numSteps = (int)((1. / 30.) / DT_OUTER);
+		numSteps = 60;
 	}
 	else {
-		numSteps = (int)((1. / 30.) / DELTA_T);
+		numSteps = (int)((1. / 24.) / DELTA_T);
 	}
 
 

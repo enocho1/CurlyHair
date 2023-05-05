@@ -54,7 +54,7 @@ def generateRoots(r=1, n=6, mode=0):
 
 def generateHair(radius, density, spread="radial", mode=0):
     # roots = generateRoots(radius, density, mode)
-    roots = [np.array([0,0,0])]
+    roots = [np.array([0,5,0])]
     # n = len(roots)
     # print
     hair = []
@@ -65,7 +65,7 @@ def generateHair(radius, density, spread="radial", mode=0):
             direction = np.array([1, 0, 0])
         elif spread == "up":
             direction = np.array([0, 1, 0])
-        hair.append(newHair(base, direction, 1, 5))
+        hair.append(newHair(base, direction, 1, 30))
     # for base in roots:
     #     if spread == "radial":
     #         direction = base

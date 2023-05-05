@@ -2,12 +2,14 @@
 
 #include "Spring.h"
 #include "taz_StretchSpring.h"
+#include "GUILib/OBJReader.h"
 #include "ZeroLengthSpring.h"
 #include "MS_SparseSquare.h"
 #include <vector>
 #include <list>
 #include "GUILib/GLMesh.h"
 #include <string>
+#include <filesystem>
 #include "Hair.h"
 
 using namespace std;
@@ -24,6 +26,7 @@ class ParticleSystem {
 private:
 	// Vectors containing particle states for the system.
 	dVector positions;
+	dVector meshPositions;
 	dVector velocities;
 	dVector masses;
 	P3D center;
@@ -50,7 +53,9 @@ private:
 	// Vectors to pass to OpenGL for drawing.
 	// Each time step, the relevant data are copied into these lists.
 	vector<double> positionArray;
+	vector<double> meshPositionArray;
 	vector<unsigned int> pointsIndexArray;
+	vector<unsigned int> meshPointsIndexArray;
 	vector<unsigned int> edgesIndexArray;
 	vector<double> zlSpringPositionArray;
 	
@@ -87,6 +92,8 @@ public:
 	string inputName;
 
 	void manageCollisions();
+
+	void addMesh(string filename);
 
 	V3D reflectVector(V3D inputVector, V3D normal);
 

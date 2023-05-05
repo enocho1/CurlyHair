@@ -7,15 +7,17 @@
 
 
 #define K_STRETCH 4.8e05
-#define K_BEND 5.0e02
+#define K_BEND 6.0e01 //5.0e02
 #define K_CORE 0//1.5e04
 
 #define C_STRETCH 4500
 #define C_BEND 50
 #define C_CORE 1.0e03
 
+#define DAMPING 2.14e-01 //3.14e-01 //
 
-#define ALPHA_BEND 30.0
+
+#define ALPHA_BEND 3.0
 #define ALPHA_CORE 3.0
 
 #define DT_FORCE 4.62944e-05
@@ -46,14 +48,15 @@ private:
 	vector<V3D> t_vecs;
 	vector<V3D> rest_d;
 	vector<V3D> d_vecs;
+	
+	vector<V3D> smooth_vels;
 
 
 
 	//returns the smoothed version of whatever attribute you pass it (usually pos, but sometimes vels)
 	void smooth(const dVector& x, double alpha);
-	void computeSmooth(const dVector& x, double alpha);
+	void computeSmoothVelocities(const dVector& v, double alpha);
 	void computeInitialSmooth(const dVector& x, double alpha);
-	void integrateDamping(vector<V3D>& v, vector<V3D>& f);
 	void initializeFrames(const dVector& x);
 	void updateFrames(const dVector& x);
 	void updateDVecs(const dVector& x, double alpha, vector<V3D>& d_list);
@@ -66,6 +69,7 @@ public:
 	const vector<V3D>& const getDVecs() { return d_vecs; };
 
 	void integrateForces(const dVector& x, const dVector& v, dVector& f);
+	void integrateDampingForces(const dVector& x, const dVector& v, dVector& f);
 	void setPoints(vector<int> points);
 	void initializeHairVars(const dVector& x);
 	void vis(const dVector& x);

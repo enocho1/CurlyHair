@@ -39,8 +39,41 @@ void Hair::smooth(const dVector& x, double alpha)
 
 }
 
-void Hair::computeSmooth(const dVector& x, double alpha)
+void Hair::computeSmoothVelocities(const dVector& v, double alpha)
 {
+	smooth_vels.clear();
+
+	double beta;
+	if (alpha <= 0) {
+		beta = 1.0;
+	}
+	else {
+		beta = min(1.0, (1.0 - exp(-1.0 / alpha)));
+	}
+
+	//particles
+	int idx0 = 3 * particles[0];
+	int idx1 = 3 * particles[1];
+	auto p0 = P3D(v[idx0], v[idx0 + 1], v[idx0 + 2]);
+	auto p1 = P3D(v[idx1], v[idx1 + 1], v[idx1 + 2]);
+	auto d_1 = p1 - p0;
+	auto d_2 = p1 - p0;
+
+	smoothed.push_back(p0);
+	for (int i = 1; i < particles.size(); i++) {
+		int current = 3 * particles[i];
+		int prev = 3 * particles[i - 1];
+		auto p1 = P3D(v[current], v[current + 1], v[current + 2]);
+		auto p2 = P3D(v[prev], v[prev + 1], v[prev + 2]);
+
+		V3D d = 2.0 * (1.0 - beta) * d_1 - (1.0 - beta) * (1.0 - beta) * d_2 + beta * beta * (p1 - p2);
+
+		auto next = d + smoothed[smoothed.size() - 1];
+		smoothed.push_back(next);
+		d_2 = d_1;
+		d_1 = d;
+
+	}
 
 }
 
@@ -49,8 +82,43 @@ void Hair::computeInitialSmooth(const dVector& x, double alpha)
 
 }
 
-void Hair::integrateDamping(vector<V3D>& v, vector<V3D>& f)
+
+void Hair::integrateDampingForces(const dVector& x, const dVector& v, dVector& f)
 {
+	updateDVecs(v, ALPHA_CORE, smooth_vels);
+	updateDVecs(x, ALPHA_CORE, d_vecs);
+
+
+	//spring forces
+	for (int i = 0; i < particles.size() - 1; i++) {
+		int index1 = 3 * particles[i];
+		int index2 = 3 * particles[i + 1];
+		auto p1 = P3D(x[index1], x[index1 + 1], x[index1 + 2]);
+		auto p2 = P3D(x[index2], x[index2 + 1], x[index2 + 2]);
+		auto v1 = V3D(v[index1], v[index1 + 1], v[index1 + 2]);
+		auto v2 = V3D(v[index2], v[index2 + 1], v[index2 + 2]);
+
+		V3D dv = v2 - v1;
+		V3D e = p2 - p1;
+		V3D t = t_vecs[i];
+
+
+		V3D stretch = C_STRETCH * dv.dot(e.normalized()) * e.normalized();
+		V3D bend = C_BEND * (dv - V3D(dv.dot(e.normalized()) * e.normalized()));
+		V3D core = C_CORE * smooth_vels[i].dot(d_vecs[i].normalized()) * d_vecs[i].normalized();
+
+
+		for (int k = 0; k < 3; k++) {
+			f[index1 + k] += stretch[k];
+			f[index2 + k] -= stretch[k];
+
+			f[index1 + k] += bend[k];
+			f[index2 + k] -= bend[k];
+
+			f[index1 + k] += core[k];
+			f[index2 + k] -= core[k];
+		}
+	}
 }
 
 void Hair::initializeFrames(const dVector& x)
@@ -238,7 +306,7 @@ void Hair::updateDVecs(const dVector& x, double alpha, vector<V3D>& d_list)
 void Hair::updateHead(dVector& x)
 {
 	//pin the root back to the head
-	int index = 3* particles[0];
+	int index = 3 * particles[0];
 	for (int k = 0; k < 3; k++) {
 		x[index + k] = rest_x[0][k];
 	}
@@ -247,16 +315,21 @@ void Hair::updateHead(dVector& x)
 
 void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 {
-	
+
 	updateFrames(x);
 	updateDVecs(x, ALPHA_CORE, d_vecs);
 
+	int root = 3 * particles[0];
+	
+
+	//spring forces
 	for (int i = 0; i < particles.size() - 1; i++) {
-		//particles
 		int index1 = 3 * particles[i];
 		int index2 = 3 * particles[i + 1];
 		auto p1 = P3D(x[index1], x[index1 + 1], x[index1 + 2]);
 		auto p2 = P3D(x[index2], x[index2 + 1], x[index2 + 2]);
+		V3D v2 = P3D(v[index2], v[index2 + 1], v[index2 + 2]);
+
 
 		V3D e = p2 - p1;
 		V3D t = t_vecs[i];
@@ -264,60 +337,25 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 
 		V3D stretch = K_STRETCH * (e.length() - 1) * e.normalized();
 		V3D bend = K_BEND * (e - t);
-		V3D core = K_CORE * (d_vecs[i].length() - rest_d[i].length()) * d_vecs[i].normalized();
+		V3D core = K_CORE * max(0.0, (d_vecs[i].length() - rest_d[i].length())) * d_vecs[i].normalized();
+
+		V3D damping = -DAMPING * v2;
 
 
+			for (int k = 0; k < 3; k++) {
+				f[index1 + k] += stretch[k];
+				f[index2 + k] -= stretch[k];
 
-		for (int k = 0; k < 3; k++) {
-			f[index1 + k] += stretch[k];
-			f[index2 + k] -= stretch[k];
+				f[index1 + k] += bend[k];
+				f[index2 + k] -= bend[k];
 
-			f[index1 + k] += bend[k];
-			f[index2 + k] -= bend[k];
+				f[index1 + k] -= core[k];
+				f[index2 + k] += core[k];
 
-			f[index1 + k] += core[k];
-			f[index2 + k] -= core[k];
-		}
+				//damping
+				f[index2 + k] += damping[k];
+			}
 	}
-
-	////bend spring
-	//int j = 0;
-	//for (int ii = 0; ii < t_vecs.size(); ii++) {
-
-	//	V3D t = t_vecs[ii];
-	//	//particles
-	//	int index = 3 * particles[j];
-	//	int index2 = 3 * particles[j + 1];
-	//	auto p1 = P3D(x[index], x[index + 1], x[index + 2]);
-	//	auto p2 = P3D(x[index2], x[index2 + 1], x[index2 + 2]);
-	//	V3D e = p2 - p1;
-	//	V3D bend = K_BEND * (e - t);
-
-	//	/*double bend_size(bend.length());
-	//	Logger::consolePrint("bend_mag.=>,%d", bend_size);*/
-
-	//	/*for (int k = 0; k < 3; k++) {
-	//		f[index + k] += bend[k];
-	//		f[index2 + k] -= bend[k];
-	//	}*/
-
-	//	j++;
-	//}
-
-	//core spring - kinda essential
-	updateDVecs(x, ALPHA_CORE, d_vecs);
-	for (int i = 0; i < particles.size()-1; i++) {
-		int index = 3 * particles[i];
-		int index2 = 3 * particles[i+1];
-
-		V3D core = K_CORE * (d_vecs[i].length() - rest_d[i].length()) * d_vecs[i].normalized();
-
-		for (int k = 0; k < 3; k++) {
-			/*f[index + k] += core[k];
-			f[index2 + k] -= core[k];*/
-		}
-	}
-
 
 	//external forces (wind, gravity etc)
 	for (int i = 0; i < particles.size(); i++) {
@@ -328,8 +366,10 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 		f[index + 1] -= 9.81;
 
 	}
-
-
+	//root constraint
+	for (int k = 0; k < 3; k++) {
+		f[root + k] = 0;
+	}
 }
 
 void Hair::setPoints(vector<int> points)

@@ -68,7 +68,7 @@ def generateRoots(r=1, n=6, mode=0):
 
 def generateHair(radius, density, spread="radial", mode=0):
     # roots = generateRoots(radius, density, mode)
-    roots = [np.array([0,0,0])]
+    roots = [np.array([0,5,0])]
     # n = len(roots)
     # print
     hair = []

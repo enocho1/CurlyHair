@@ -18,7 +18,7 @@ ParticleSystem::ParticleSystem(vector<Particle>& particles)
 {
 	center = P3D(0, 0, 0);
 	head_speed = V3D(0, 0, 0);
-	radius = 1.0f;
+	radius = 5.0f;
 	drawSprings = true;
 	drawParticles = true;
 	drawZeroLengthSprings = true;
@@ -96,7 +96,7 @@ bool ParticleSystem::drawSprings = false;
 bool ParticleSystem::drawStretchSprings = true;
 bool ParticleSystem::drawParticles = true;
 bool ParticleSystem::drawZeroLengthSprings = true;
-bool ParticleSystem::drawFaces = true;
+bool ParticleSystem::drawFaces = false;
 bool ParticleSystem::enableGravity = false;
 bool ParticleSystem::enableCollision = false;
 
@@ -402,27 +402,27 @@ void ParticleSystem::integrate_Pxr(double outer)
 
 	//integrate forces
 	dVector x_temp = positions;
-	dVector v_temp = velocities;
+	
 	dVector force = dVector::Zero(positions.size());
+	dVector force_damp = dVector::Zero(positions.size());
+
+	//integrate forces 10 times
 	for (int t = 0; t < 15; t++)
 	{
+		dVector v_temp = velocities;
+		dVector x_temp2 = positions;
 		force = dVector::Zero(positions.size());
 		for (int i = 0; i < hairs.size(); i++)
 		{
 			hairs[i].integrateForces(x_temp, velocities, force);
 		}
 		velocities = velocities + force  * outer/15.0;
-	
+		x_temp = x_temp + velocities  * outer/15.0;
+
 	}
 
 	positions = positions + velocities * outer;
-	for (int i = 0; i < hairs.size(); i++) {
-		hairs[i].updateHead(positions);
-
-	}
-
-	//moveHead(0.000694416);
-	//manageCollisions();
+	manageCollisions();
 }
 
 void ParticleSystem::integrate_Pxr_Alt(double outer)
@@ -467,6 +467,53 @@ void ParticleSystem::manageCollisions() {
 
 }
 
+void ParticleSystem::addMesh(string filename)
+{
+	GLMesh* mesh = 0;
+	try {
+		mesh = OBJReader::loadOBJFile(filename.c_str());
+	}
+	catch (char* e) {
+		Logger::consolePrint("%s", e);
+	}
+	setMesh(mesh);
+
+	vector<Particle> ps;
+
+	// First obtain vertices; these will become particles
+	for (int i = 0; i < mesh->vertexCount; i++) {
+		int base = 3 * i;
+		Particle p;
+		p.position = P3D(mesh->vertexList[base], mesh->vertexList[base + 1], mesh->vertexList[base + 2]);
+		p.velocity = V3D(0, 0, 0);
+		p.mass = DEFAULT_MASS;
+		ps.push_back(p);
+	}
+
+	int vert_count = ps.size();
+
+	// Create vectors of this size to hold the particle states
+	meshPositions = dVector(vert_count * 3);
+
+	particlePinned = vector<bool>(vert_count);
+
+	for (int i = 0; i < vert_count; i++) {
+		meshPositions[3 * i] = ps[i].position.at(0);
+		meshPositions[3 * i + 1] = ps[i].position.at(1);
+		meshPositions[3 * i + 2] = ps[i].position.at(2);
+		meshPositions[3 * i + 2] = ps[i].position.at(2);
+	}
+	recordPositions();
+
+	// Arrays to be passed to OpenGL
+	meshPositionArray = vector<double>(vert_count * 3);
+	meshPointsIndexArray = vector<unsigned int>(vert_count);
+
+	for (int i = 0; i < vert_count; i++) {
+		meshPointsIndexArray[i] = i;
+	}
+}
+
 
 V3D ParticleSystem::reflectVector(V3D inputVector, V3D normal) {
 	double dn = 2 * inputVector.dot(normal);
@@ -474,6 +521,17 @@ V3D ParticleSystem::reflectVector(V3D inputVector, V3D normal) {
 }
 
 void ParticleSystem::drawParticleSystem() {
+
+	if (mesh) {
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_DOUBLE, 0, &(meshPositionArray.front()));
+
+		glColor3d(0.2, 0.9, 0.3);
+		mesh->drawMeshElements();
+		mesh->drawMesh();
+
+		glDisableClientState(GL_VERTEX_ARRAY);
+	}
 
 	// Copy particle positions into array
 	for (int i = 0; i < positions.size(); i++) {
@@ -492,15 +550,7 @@ void ParticleSystem::drawParticleSystem() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
-	if (mesh && drawFaces) {
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
-
-		glColor3d(0.2, 0.4, 0.6);
-		mesh->drawMeshElements();
-
-		glDisableClientState(GL_VERTEX_ARRAY);
-	}
+	
 
 	if (drawSprings && springs.size() > 0) {
 		// Draw all springs as green lines

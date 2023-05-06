@@ -15,6 +15,7 @@
 #define C_CORE 1.0e03
 
 #define DAMPING 2.14e-01 //3.14e-01 //
+#define CHARGE 8.14e-01 //3.14e-01 //
 
 
 #define ALPHA_BEND 3.0
@@ -56,7 +57,6 @@ private:
 	//returns the smoothed version of whatever attribute you pass it (usually pos, but sometimes vels)
 	void smooth(const dVector& x, double alpha);
 	void computeSmoothVelocities(const dVector& v, double alpha);
-	void computeInitialSmooth(const dVector& x, double alpha);
 	void initializeFrames(const dVector& x);
 	void updateFrames(const dVector& x);
 	void updateDVecs(const dVector& x, double alpha, vector<V3D>& d_list);
@@ -74,5 +74,6 @@ public:
 	void initializeHairVars(const dVector& x);
 	void vis(const dVector& x);
 	void updateHead(dVector& x);
+	void repulsion(const dVector& x, const dVector& v, dVector& f, int particle_count);
 
 };

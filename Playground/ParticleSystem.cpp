@@ -18,7 +18,7 @@ ParticleSystem::ParticleSystem(vector<Particle>& particles)
 {
 	center = P3D(0, 0, 0);
 	head_speed = V3D(0, 0, 0);
-	radius = 5.0f;
+	radius = 15.0f;
 	drawSprings = true;
 	drawParticles = true;
 	drawZeroLengthSprings = true;
@@ -402,7 +402,7 @@ void ParticleSystem::integrate_Pxr(double outer)
 
 	//integrate forces
 	dVector x_temp = positions;
-	
+
 	dVector force = dVector::Zero(positions.size());
 	dVector force_damp = dVector::Zero(positions.size());
 
@@ -416,10 +416,17 @@ void ParticleSystem::integrate_Pxr(double outer)
 		{
 			hairs[i].integrateForces(x_temp, velocities, force);
 		}
-		velocities = velocities + force  * outer/15.0;
-		x_temp = x_temp + velocities  * outer/15.0;
+		velocities = velocities + force * outer / 15.0;
+		x_temp = x_temp + velocities * outer / 15.0;
 
 	}
+
+	/*force = dVector::Zero(positions.size());
+	for (int i = 0; i < hairs.size(); i++)
+	{
+		hairs[i].repulsion(x_temp, velocities, force, numParticles);
+	}*/
+	velocities = velocities + force * outer;
 
 	positions = positions + velocities * outer;
 	manageCollisions();
@@ -466,6 +473,8 @@ void ParticleSystem::manageCollisions() {
 
 
 }
+
+
 
 void ParticleSystem::addMesh(string filename)
 {
@@ -550,7 +559,7 @@ void ParticleSystem::drawParticleSystem() {
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 
-	
+
 
 	if (drawSprings && springs.size() > 0) {
 		// Draw all springs as green lines

@@ -77,11 +77,6 @@ void Hair::computeSmoothVelocities(const dVector& v, double alpha)
 
 }
 
-void Hair::computeInitialSmooth(const dVector& x, double alpha)
-{
-
-}
-
 
 void Hair::integrateDampingForces(const dVector& x, const dVector& v, dVector& f)
 {
@@ -313,6 +308,43 @@ void Hair::updateHead(dVector& x)
 
 }
 
+void Hair::repulsion(const dVector& x, const dVector& v, dVector& f, int particle_count)
+{
+	int start = particles[0];
+	int end = particles[particles.size() - 1];
+
+	for (int i = 1; i < particles.size() - 1; i++) {
+		int index1 = 3 * particles[i];
+		auto p1 = P3D(x[index1], x[index1 + 1], x[index1 + 2]);
+
+		//loop through all other hairs
+		for (int j = 0; j < particle_count; j++) {
+
+			//don't repel hairs on the same strand
+			if (j<start || j>end) {
+				int index2 = 3 * j;
+				auto p2 = P3D(x[index2], x[index2 + 1], x[index2 + 2]);
+				auto e = p1 - p2;
+				double r2 = e.length2();
+				V3D repulse;
+				if (r2 > 0) {
+					V3D repulse = CHARGE * e / r2;
+				}
+				else {
+					V3D repulse = 0.0 * e;;
+				}
+				for (int k = 0; k < 3; k++) {
+					f[index1 + k] += repulse[k];
+				}
+
+			}
+		}
+		int index2 = 3 * particles[i + 1];
+		V3D v2 = P3D(v[index2], v[index2 + 1], v[index2 + 2]);
+	}
+
+}
+
 void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 {
 
@@ -320,7 +352,7 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 	updateDVecs(x, ALPHA_CORE, d_vecs);
 
 	int root = 3 * particles[0];
-	
+
 
 	//spring forces
 	for (int i = 0; i < particles.size() - 1; i++) {
@@ -341,26 +373,30 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 
 		V3D damping = -DAMPING * v2;
 
+		V3D wind = CHARGE * V3D(((double)rand()) / RAND_MAX, ((double)rand()) / RAND_MAX, ((double)rand()) / RAND_MAX).normalized();
 
-			for (int k = 0; k < 3; k++) {
-				f[index1 + k] += stretch[k];
-				f[index2 + k] -= stretch[k];
 
-				f[index1 + k] += bend[k];
-				f[index2 + k] -= bend[k];
+		for (int k = 0; k < 3; k++) {
+			f[index1 + k] += stretch[k];
+			f[index2 + k] -= stretch[k];
 
-				f[index1 + k] -= core[k];
-				f[index2 + k] += core[k];
+			f[index1 + k] += bend[k];
+			f[index2 + k] -= bend[k];
 
-				//damping
-				f[index2 + k] += damping[k];
-			}
+			f[index1 + k] -= core[k];
+			f[index2 + k] += core[k];
+
+			//damping
+			f[index2 + k] += damping[k];
+			//wind
+			f[index2 + k] += wind[k];
+
+		}
 	}
 
 	//external forces (wind, gravity etc)
 	for (int i = 0; i < particles.size(); i++) {
 		int index = 3 * particles[i];
-		//wind
 
 		//gravity
 		f[index + 1] -= 9.81;

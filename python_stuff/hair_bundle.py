@@ -18,6 +18,19 @@ def newHair(root, direction, step, length):
         points.append(root + i * step * d)
     return (points)
 
+def newHairC(root, direction, step, length):
+    points = []
+    p_final = []
+    p0 = np.array([0, 1, 0])
+    for x in range (length):
+        points.append(np.array([x,0.3*math.cos(x),0.3*math.sin(x)]) + root - p0)
+    p_final.append(points[0])
+    for x in range (1,length):
+        edge = points[x]-points[x-1]
+        edge_norm = np.linalg.norm(edge)
+        edge /= edge_norm
+        p_final.append(p_final[x-1]+edge)
+    return (p_final)
 
 def generateRoots(r=1, n=6, mode=0):
     """
@@ -60,17 +73,17 @@ def generateHair(radius, density, spread="radial", mode=0):
     # n = len(roots)
     # print
     hair = []
-    for i in range(7):
-        for j in range(8):
+    for i in range(6):
+        for j in range(6):
             if spread == "radial":
                 direction = base
             elif spread == "horizontal":
                 direction = np.array([1, 0, 0])
             elif spread == "up":
                 direction = np.array([0, 1, 0])
-            non_rotated_hair = newHair(np.array([0,0,0]), direction, 1, 30)
-            r1 = R.from_euler('z', (-2+4*(j/7)), degrees=True)
-            r2 = R.from_euler('y', (-2+4*(i/6)), degrees=True)
+            non_rotated_hair = newHairC(np.array([0,0,0]), direction, 1, 50)
+            r1 = R.from_euler('z', (-2+4*(j/5)), degrees=True)
+            r2 = R.from_euler('y', (-2+4*(i/5)), degrees=True)
             non_rotated_hair = r1.apply(non_rotated_hair)
             non_rotated_hair = r2.apply(non_rotated_hair)
             for h in non_rotated_hair:

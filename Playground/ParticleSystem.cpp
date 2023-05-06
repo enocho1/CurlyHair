@@ -24,10 +24,19 @@ ParticleSystem::ParticleSystem(vector<Particle>& particles)
 	drawZeroLengthSprings = true;
 	count = 0;
 	numParticles = particles.size();
-	mesh = 0;
 	capturedData = "";
 	frameCount = 0;
 	ready_to_quit = false;
+	colours.clear();
+
+	auto black = V3D(0.0, 0.0, 0.0);
+	auto green_hairband = V3D(0.4, 1.0, 0.4);
+	auto brown_skin = V3D(196.0, 164.0, 132.0) / 255.0;
+	auto head_cap = V3D(160.0, 133.0, 99.0)/255.0;
+	colours.push_back(black); //eyes
+	colours.push_back(green_hairband); 
+	colours.push_back(brown_skin); //head
+	colours.push_back(head_cap); 
 
 
 	// Create vectors of this size to hold the particle states
@@ -531,13 +540,15 @@ V3D ParticleSystem::reflectVector(V3D inputVector, V3D normal) {
 
 void ParticleSystem::drawParticleSystem() {
 
-	if (mesh) {
+	if (true) {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_DOUBLE, 0, &(meshPositionArray.front()));
 
 		glColor3d(0.2, 0.9, 0.3);
-		mesh->drawMeshElements();
-		mesh->drawMesh();
+		for (int i = 0; i < meshes.size();i++) {
+			auto mesh = meshes[i];
+			mesh->drawMesh(colours[i]);
+		}
 
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
@@ -575,7 +586,8 @@ void ParticleSystem::drawParticleSystem() {
 		glLineWidth(6.0);
 
 		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
-		glColor3d(0.2, 0.8, 0.2);
+		glColor3d(0.2, 0.8, 0.2);//green
+		glColor3d(0.4, 0.2, 0.1);//not green, like a dark orange i think
 		glDrawElements(GL_LINES, springs.size() * 2, GL_UNSIGNED_INT, &(edgesIndexArray.front()));
 
 		glDisable(GL_LINE_STIPPLE);
@@ -593,36 +605,37 @@ void ParticleSystem::drawParticleSystem() {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		//		glEnable(GL_LINE_STIPPLE);
 		//		glLineStipple(1, 0x00FF);
-		glLineWidth(6.0);
+		glLineWidth(15.0);
 
 		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
-		glColor3d(0.2, 0.8, 0.2);
+		//glColor3d(0.2, 0.8, 0.2);//green
+		glColor3d(0.4, 0.2, 0.12); //brown i think
 		glDrawElements(GL_LINES, stretch_springs.size() * 2, GL_UNSIGNED_INT, &(edgesIndexArray.front()));
 
 		glDisable(GL_LINE_STIPPLE);
 		glDisableClientState(GL_VERTEX_ARRAY);
 	}
-	if (drawStretchSprings && stretch_springs.size() > 0) {
-		// Draw all springs as green lines
-		edgesIndexArray.clear();
-		for (auto& spring : stretch_springs) {
-			edgesIndexArray.push_back((unsigned int)spring.p0());
-			edgesIndexArray.push_back((unsigned int)spring.p1());
-		}
+	//if (drawStretchSprings && stretch_springs.size() > 0) {
+	//	// Draw all springs as green lines
+	//	edgesIndexArray.clear();
+	//	for (auto& spring : stretch_springs) {
+	//		edgesIndexArray.push_back((unsigned int)spring.p0());
+	//		edgesIndexArray.push_back((unsigned int)spring.p1());
+	//	}
 
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		//		glEnable(GL_LINE_STIPPLE);
-		//		glLineStipple(1, 0x00FF);
-		glLineWidth(6.0);
+	//	glEnableClientState(GL_VERTEX_ARRAY);
+	//	//		glEnable(GL_LINE_STIPPLE);
+	//	//		glLineStipple(1, 0x00FF);
+	//	glLineWidth(6.0);
 
-		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
-		glColor3d(0.2, 0.8, 0.2);
-		glDrawElements(GL_LINES, stretch_springs.size() * 2, GL_UNSIGNED_INT, &(edgesIndexArray.front()));
+	//	glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
+	//	glColor3d(0.2, 0.8, 0.2);
+	//	glDrawElements(GL_LINES, stretch_springs.size() * 2, GL_UNSIGNED_INT, &(edgesIndexArray.front()));
 
-		glDisable(GL_LINE_STIPPLE);
-		glDisableClientState(GL_VERTEX_ARRAY);
-	}
+	//	glDisable(GL_LINE_STIPPLE);
+	//	glDisableClientState(GL_VERTEX_ARRAY);
+	//}
 
 	if (drawZeroLengthSprings && zeroLengthSprings.size() > 0) {
 		edgesIndexArray.clear();
@@ -738,7 +751,7 @@ void ParticleSystem::drawParticleSystem() {
 }
 
 void ParticleSystem::setMesh(GLMesh* m) {
-	mesh = m;
+	meshes.push_back(m);
 }
 
 //move the center and update the static spring ends

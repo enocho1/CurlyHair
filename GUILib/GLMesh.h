@@ -401,6 +401,7 @@ public:
 		This method draws the model.
 	*/
 	void drawMesh();
+	void drawMesh(V3D colour);
 
 	/**
 		This method prints out the normals of the model - for testing purposes.

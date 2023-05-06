@@ -36,6 +36,7 @@ private:
 	string capturedData;
 	int frameCount;
 	vector<Hair> hairs;
+	vector<V3D>colours;//for "rendering"
 	
 
 	// A list of all generic springs in the system.
@@ -67,7 +68,7 @@ private:
 
 	int count;
 
-	GLMesh* mesh;
+	vector<GLMesh*> meshes;
 	
 public:
 	ParticleSystem(vector<Particle>& particles);

@@ -594,6 +594,67 @@ void GLMesh::drawMesh() {
 	material.end();
 }
 
+
+
+
+
+
+
+void GLMesh::drawMesh(V3D colour) {
+	material.setColor(colour[0], colour[1], colour[2], 1);
+	material.apply();
+
+	/* enable the vertex array list*/
+	if (vertexList.size() > 0) {
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_DOUBLE, 0, &(vertexList.front()));
+	}
+
+	if (useNormals) {
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glNormalPointer(GL_DOUBLE, 0, &(normalList.front()));
+	}
+
+	if (material.hasTextureParam()) {
+		glClientActiveTexture(GL_TEXTURE1);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(3, GL_DOUBLE, 0, &(tangentList.front()));
+	}
+
+	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+	/* enable the texture coordinates arrays */
+	if (material.hasTextureParam()) {
+		glClientActiveTexture(GL_TEXTURE0);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(3, GL_DOUBLE, 0, &(texCoordList.front()));
+	}
+	if (IS_EQUAL(material.a, 1))
+		drawMeshElements();
+	else {
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_FRONT);
+		drawMeshElements();
+		glCullFace(GL_BACK);
+		drawMeshElements();
+		glDisable(GL_CULL_FACE);
+	}
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+
+	if (material.hasTextureParam()) {
+		glClientActiveTexture(GL_TEXTURE1);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+
+	if (material.hasTextureParam()) {
+		glClientActiveTexture(GL_TEXTURE0);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+
+	material.end();
+}
+
 // Renders the mesh by appending it to the OBJ file that is passed in. The vertices are transformed using the provided orientation and translation	
 // vertexIdxOffset indicates the index of the first vertex for this object, making it possible to render multiple meshes to the same OBJ file
 // Returns the number of vertices written to the file

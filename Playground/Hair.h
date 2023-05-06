@@ -7,14 +7,14 @@
 
 
 #define K_STRETCH 4.8e05
-#define K_BEND 6.0e01 //5.0e02
+#define K_BEND 3.6e02//5.0e02 //6.0e01 //
 #define K_CORE 0//1.5e04
 
 #define C_STRETCH 4500
 #define C_BEND 50
 #define C_CORE 1.0e03
 
-#define DAMPING 2.14e-01 //3.14e-01 //
+#define DAMPING 9.2e-01//1.1//2.14e-01 //3.14e-01 //
 #define CHARGE 8.14e-01 //3.14e-01 //
 
 

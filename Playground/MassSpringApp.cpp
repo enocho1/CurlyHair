@@ -35,10 +35,10 @@ MassSpringApp::MassSpringApp() {
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
 	particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/single_curly_hair.mss");
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");
-	particleSystem->addMesh("../meshes/eyes.obj");
+	/*particleSystem->addMesh("../meshes/eyes.obj");
 	particleSystem->addMesh("../meshes/hairband.obj");
 	particleSystem->addMesh("../meshes/head.obj");
-	particleSystem->addMesh("../meshes/headcap.obj");
+	particleSystem->addMesh("../meshes/headcap.obj");*/
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/experiment1.mss");
 
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");

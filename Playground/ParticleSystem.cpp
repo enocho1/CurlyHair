@@ -605,7 +605,8 @@ void ParticleSystem::drawParticleSystem() {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		//		glEnable(GL_LINE_STIPPLE);
 		//		glLineStipple(1, 0x00FF);
-		glLineWidth(15.0);
+		//glLineWidth(15.0);
+		glLineWidth(9.0);
 
 		glVertexPointer(3, GL_DOUBLE, 0, &(positionArray.front()));
 		//glColor3d(0.2, 0.8, 0.2);//green

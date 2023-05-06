@@ -17,6 +17,47 @@ def newHair(root, direction, step, length):
         points.append(root + i * step * d)
     return (points)
 
+def newHairC(root, direction, step, length):
+    points = []
+    p_final = []
+    p0 = np.array([0, 1, 0])
+    for x in range (length):
+        points.append(np.array([x,0.3*math.cos(x),0.3*math.sin(x)]) + root - p0)
+    p_final.append(points[0])
+    for x in range (1,length):
+        edge = points[x]-points[x-1]
+        edge_norm = np.linalg.norm(edge)
+        edge /= edge_norm
+        p_final.append(p_final[x-1]+edge)
+    return (p_final)
+
+def newHairCC(root, direction, step, length):
+    points = []
+    p_final = []
+    p0 = np.array([0, 1, 0])
+    for x in range (length):
+        points.append(np.array([x,math.cos(x),math.sin(x)]) + root - p0)
+    p_final.append(points[0])
+    for x in range (1,length):
+        edge = points[x]-points[x-1]
+        edge_norm = np.linalg.norm(edge)
+        edge /= edge_norm
+        p_final.append(p_final[x-1]+edge)
+    return (p_final)
+
+def newHairZ(root, direction, step, length):
+    points = []
+    p_final = []
+    p0 = np.array([0, 1, 0])
+    for x in range (length):
+        points.append(np.array([x,0.6*(-0.5+(x%2)), 0]))
+    p_final.append(points[0])
+    for x in range (1,length):
+        edge = points[x]-points[x-1]
+        edge_norm = np.linalg.norm(edge)
+        edge /= edge_norm
+        p_final.append(p_final[x-1]+edge)
+    return (p_final)
 
 def generateRoots(r=1, n=6, mode=0):
     """
@@ -65,7 +106,7 @@ def generateHair(radius, density, spread="radial", mode=0):
             direction = np.array([1, 0, 0])
         elif spread == "up":
             direction = np.array([0, 1, 0])
-        hair.append(newHair(base, direction, 1, 30))
+        hair.append(newHairCC(base, direction, 1, 50))
     # for base in roots:
     #     if spread == "radial":
     #         direction = base

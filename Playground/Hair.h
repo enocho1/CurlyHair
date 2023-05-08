@@ -7,12 +7,12 @@
 
 
 #define K_STRETCH 4.8e05
-#define K_BEND 3.6e02//5.0e02 //6.0e01 //
-#define K_CORE 0//1.5e04
+#define K_BEND 1.2e02//6.0e01//5.0e02 //6.0e01 //
+#define K_CORE 10000
 
-#define C_STRETCH 4500
+#define C_STRETCH 45//00
 #define C_BEND 50
-#define C_CORE 1.0e03
+#define C_CORE 100
 
 #define DAMPING 9.2e-01//1.1//2.14e-01 //3.14e-01 //
 #define CHARGE 8.14e-01 //3.14e-01 //
@@ -22,7 +22,9 @@
 #define ALPHA_CORE 3.0
 
 #define DT_FORCE 4.62944e-05
-#define DT_DAMPING 4.62944e-06 
+#define DT_DAMPING 4.62944e-06
+
+
 
 
 /*
@@ -62,7 +64,7 @@ private:
 	void updateDVecs(const dVector& x, double alpha, vector<V3D>& d_list);
 
 public:
-	vector<int> particles;// the 0th entry should be the route and it's assumed that a spring exists between each connected particle.
+	vector<int> particles;// the 0th entry should be the root and it's assumed that a spring exists between each connected particle.
 
 	const vector<Matrix3x3>& const getFrames() { return frames; };
 	const vector<V3D>& const getTVecs() { return t_vecs; };

@@ -22,7 +22,9 @@ def newHairC(root, direction, step, length):
     p_final = []
     p0 = np.array([0, 1, 0])
     for x in range (length):
-        points.append(np.array([x,0.3*math.cos(x),0.3*math.sin(x)]) + root - p0)
+        rando1 = (2*(random.random()-0.5))*0.1
+        rando2 = (2*(random.random()-0.5))*0.1
+        points.append(np.array([x,(0.3+rando1)*math.cos(x),(0.3+rando2)*math.sin(x)]) + root - p0)
     p_final.append(points[0])
     for x in range (1,length):
         edge = points[x]-points[x-1]
@@ -36,7 +38,9 @@ def newHairCC(root, direction, step, length):
     p_final = []
     p0 = np.array([0, 1, 0])
     for x in range (length):
-        points.append(np.array([x,math.cos(x),math.sin(x)]) + root - p0)
+        rando1 = (2*(random.random()-0.5))*0.1
+        rando2 = (2*(random.random()-0.5))*0.1
+        points.append(np.array([x,(1+rando1)*math.cos(x),(1+rando2)*math.sin(x)]) + root - p0)
     p_final.append(points[0])
     for x in range (1,length):
         edge = points[x]-points[x-1]
@@ -50,7 +54,7 @@ def newHairZ(root, direction, step, length):
     p_final = []
     p0 = np.array([0, 1, 0])
     for x in range (length):
-        points.append(np.array([x,0.6*(-0.5+(x%2)), 0]))
+        points.append(np.array([x, 0.6*(-0.5+(x%2)), 0]))
     p_final.append(points[0])
     for x in range (1,length):
         edge = points[x]-points[x-1]
@@ -95,7 +99,7 @@ def generateRoots(r=1, n=6, mode=0):
 
 def generateHair(radius, density, spread="radial", mode=0):
     # roots = generateRoots(radius, density, mode)
-    roots = [np.array([0,5,0])]
+    roots = [np.array([0,14.95,0])]
     # n = len(roots)
     # print
     hair = []
@@ -164,8 +168,16 @@ exps = [{
     "speed": np.array([0,0,0])
 }]
 """GENERATING MOVEMENT"""
+hairvis = []
+for hair in all_the_hairs:
+    points = np.zeros((2,len(hair)))
+    for i in range(len(hair)):
+        points[0][i] = hair[i][1]
+        points[1][i] = hair[i][0]
+    hairvis.append(points)
 
-
+# plt.plot(hairvis[0][0], hairvis[0][1])
+# plt.show()
 
 def generateExperiments(experiments):
     for e in range(len(experiments)):

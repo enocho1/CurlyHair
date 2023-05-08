@@ -51,7 +51,12 @@ def newHairCC(root, direction, step, length):
     p_final = []
     p0 = np.array([0, 1, 0])
     for x in range (length):
-        points.append(np.array([x,math.cos(x),math.sin(x)]) + root - p0)
+        sign = -1
+        if random.random()>0.27:
+            sign*=-1
+        rando1 = (2*(random.random()-0.5))*0.1
+        rando2 = (2*(random.random()-0.5))*0.1
+        points.append(np.array([x,(1+rando1)*math.cos(x),(1+rando2)*math.sin(x)]) + root - p0)
     p_final.append(points[0])
     for x in range (1,length):
         edge = points[x]-points[x-1]
@@ -109,9 +114,11 @@ def generateHair(radius, density, spread="radial", mode=0):
                 direction = np.array([1, 0, 0])
             elif spread == "up":
                 direction = np.array([0, 1, 0])
+            randoz = (2*(random.random()-0.5))
+            randoy = (2*(random.random()-0.5))
             non_rotated_hair = newHairCC(np.array([0,0,0]), direction, 1, 50)
-            r1 = R.from_euler('z', (-2+4*(j/5)), degrees=True)
-            r2 = R.from_euler('y', (-2+4*(i/5)), degrees=True)
+            r1 = R.from_euler('z', (-2+4*(j/5))+randoz, degrees=True)
+            r2 = R.from_euler('y', (-2+4*(i/5))+randoy, degrees=True)
             non_rotated_hair = r1.apply(non_rotated_hair)
             non_rotated_hair = r2.apply(non_rotated_hair)
             for h in non_rotated_hair:

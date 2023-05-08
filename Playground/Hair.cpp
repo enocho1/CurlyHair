@@ -83,6 +83,8 @@ void Hair::integrateDampingForces(const dVector& x, const dVector& v, dVector& f
 	updateDVecs(v, ALPHA_CORE, smooth_vels);
 	updateDVecs(x, ALPHA_CORE, d_vecs);
 
+	int root = 3 * particles[0];
+
 
 	//spring forces
 	for (int i = 0; i < particles.size() - 1; i++) {
@@ -113,6 +115,10 @@ void Hair::integrateDampingForces(const dVector& x, const dVector& v, dVector& f
 			f[index1 + k] += core[k];
 			f[index2 + k] -= core[k];
 		}
+	}
+	//root constraint
+	for (int k = 0; k < 3; k++) {
+		f[root + k] = 0;
 	}
 }
 
@@ -217,7 +223,6 @@ void Hair::updateFrames(const dVector& x)
 	//parallel transport over smoothed curve
 	for (int i = 0; i < particles.size(); i++) {
 
-
 		if (i + 1 < particles.size()) {
 			t = (smoothed[i + 1] - smoothed[i]).normalized();
 		}
@@ -250,7 +255,6 @@ void Hair::updateFrames(const dVector& x)
 		frame.col(2) = normals[i];
 
 		frames.push_back(frame);
-
 
 	}
 
@@ -371,6 +375,7 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 		V3D bend = K_BEND * (e - t);
 		V3D core = K_CORE * max(0.0, (d_vecs[i].length() - rest_d[i].length())) * d_vecs[i].normalized();
 
+		
 		V3D damping = -DAMPING * v2;
 
 		V3D wind = CHARGE * V3D(((double)rand()) / RAND_MAX, ((double)rand()) / RAND_MAX, ((double)rand()) / RAND_MAX).normalized();
@@ -383,12 +388,12 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 			f[index1 + k] += bend[k];
 			f[index2 + k] -= bend[k];
 
-			f[index1 + k] -= core[k];
-			f[index2 + k] += core[k];
+			f[index1 + k] += core[k];
+			f[index2 + k] -= core[k];
 
 			//damping
-			f[index2 + k] += damping[k];
-			//wind
+			//f[index2 + k] += damping[k];
+			//wind/noise
 			f[index2 + k] += wind[k];
 
 		}

@@ -320,6 +320,7 @@ void Hair::repulsion(const dVector& x, const dVector& v, dVector& f, int particl
 	for (int i = 1; i < particles.size() - 1; i++) {
 		int index1 = 3 * particles[i];
 		auto p1 = P3D(x[index1], x[index1 + 1], x[index1 + 2]);
+		auto v1 = V3D(v[index1], v[index1 + 1], v[index1 + 2]);
 
 		//loop through all other hairs
 		for (int j = 0; j < particle_count; j++) {
@@ -328,14 +329,12 @@ void Hair::repulsion(const dVector& x, const dVector& v, dVector& f, int particl
 			if (j<start || j>end) {
 				int index2 = 3 * j;
 				auto p2 = P3D(x[index2], x[index2 + 1], x[index2 + 2]);
-				auto e = p1 - p2;
+				V3D e = p1 - p2;
 				double r2 = e.length2();
-				V3D repulse;
+				V3D repulse = 0.0 * e;
 				if (r2 > 0) {
-					V3D repulse = CHARGE * e / r2;
-				}
-				else {
-					V3D repulse = 0.0 * e;;
+					//coulomb
+					repulse = V3D(CHARGE * e / r2) - V3D(DAMPING * v1.dot(e.normalized())* e.normalized());
 				}
 				for (int k = 0; k < 3; k++) {
 					f[index1 + k] += repulse[k];
@@ -375,7 +374,7 @@ void Hair::integrateForces(const dVector& x, const dVector& v, dVector& f)
 		V3D bend = K_BEND * (e - t);
 		V3D core = K_CORE * max(0.0, (d_vecs[i].length() - rest_d[i].length())) * d_vecs[i].normalized();
 
-		
+
 		V3D damping = -DAMPING * v2;
 
 		V3D wind = CHARGE * V3D(((double)rand()) / RAND_MAX, ((double)rand()) / RAND_MAX, ((double)rand()) / RAND_MAX).normalized();

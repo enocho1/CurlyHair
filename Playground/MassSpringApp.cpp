@@ -35,10 +35,12 @@ MassSpringApp::MassSpringApp() {
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/batch/experiment" + to_string(exper_iter) + ".mss");
 	particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/single_curly_hair.mss");
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");
-	/*particleSystem->addMesh("../meshes/eyes.obj");
+	
+	//this is how i load in the meshes: @enoch the colour is defined by list of fixed in the particle system, so messing around w/the order will mess w/ the colours
+	/*particleSystem->addMesh("../meshes/headcap.obj");
+	particleSystem->addMesh("../meshes/eyes.obj");
 	particleSystem->addMesh("../meshes/hairband.obj");
-	particleSystem->addMesh("../meshes/head.obj");
-	particleSystem->addMesh("../meshes/headcap.obj");*/
+	particleSystem->addMesh("../meshes/head.obj");*/
 	//particleSystem = ParticleSystemLoader::loadFromMSS("../meshes/experiment1.mss");
 
 	//particleSystem = ParticleSystemLoader::loadFromOBJ("../meshes/bunny200.obj");

@@ -42,7 +42,7 @@ private:
 	// A list of all generic springs in the system.
 	vector<Spring> springs;
 	
-	// A list of all generic springs in the system.
+	// A list of all regular springs in the system.
 	vector<Stretch> stretch_springs;
 
 	// A list of all zero length springs in the system.

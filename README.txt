@@ -1,5 +1,5 @@
 
-Simulator for curly hair. The library file isn't inlcuded but below are some (potentially outdated) instructions on dependencies. starter code is from assignment 1 of this class at CMU i found online. https://www.cs.cmu.edu/~scoros/cs15467-s16/
+Simulator for curly hair. The library file isn't inlcuded but below are some (potentially outdated) instructions on dependencies. starter code is from assignment 1 of this class at CMU i found online. https://www.cs.cmu.edu/~scoros/cs15467-s16/ if forking, you can copy the lib file from the assignment listed or download them manually.
 Windows:
 
 First, determine the full path to the libs file in this repository,
